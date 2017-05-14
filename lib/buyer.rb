@@ -66,6 +66,7 @@ class Buyer
   end
 
   def place_limit_buy(amt, price)
+    puts "placing buy at $#{price}"
     @gdax_api.bid(
       amt,
       price.to_f.round(2),
@@ -73,27 +74,28 @@ class Buyer
     )
   end
 
-  def buy_loop(usd_pool, buy_size, discount)
+  def cancel_oldest_order
+    order = oldest_order
+    if order_age(order) < @delay
+      puts "oldest order still less than @delay #{order_age(order)}"
+      sleep(@delay)
+    end
+    puts "killing the oldest order (#{order['price']})"
+    cancel_order(order)
+  end
+
+  def buy_loop(usd_pool, max_orders, buy_size, discount)
     while true
-      last_price = last_trade_price
-      sale_price = last_price * (1 - discount)
-      if available_usd > (sale_price * buy_size) &&
-         open_order_amount < usd_pool
-        puts "placing buy #{discount * 100}% under $#{last_price} ($#{sale_price})"
-        place_limit_buy(buy_size, sale_price)
-        sleep(@delay)
-      elsif open_orders.empty?
-        sleep(@delay)
+      sale_price = last_trade_price * (1 - discount)
+      if (open_order_amount + buy_size) > usd_pool ||
+         open_orders.length > max_orders ||
+         available_usd < (sale_price * buy_size)
+        puts 'limit hit, canceling oldest order'
+        cancel_oldest_order
       else
-        order = oldest_order
-        if order_age(order) < @delay
-          puts "oldest order still less than @delay #{order_age(order)}"
-          sleep(@delay)
-        else
-          puts "killing the oldest order (#{order['price']})"
-          cancel_order(order)
-        end
+        place_limit_buy(buy_size, sale_price)
       end
+      sleep(@delay)
     end
   end
 end
