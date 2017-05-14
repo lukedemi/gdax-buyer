@@ -14,6 +14,7 @@ GDAX_API_PASS=
 
 # optional
 USD_POOL= # maximum about of usd to have out in orders
+MAX_ORDERS= # maximum number of limit orders to leave out on the market
 BUY_SIZE= # size per buy order
 DISCOUNT= # percentage discount per buy
 CURRENCY= # currency out of LTC, BTC, ETH
