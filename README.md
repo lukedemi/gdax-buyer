@@ -2,6 +2,8 @@
 
 This simple app allows you to buy up cryptocurrency by creating and removing limit orders just under the last trade price on gdax.com.
 
+![GDAX Screenshot](/images/screenshot.png?raw=true "GDAX Buyer in Action")
+
 # Build
 
 Create a .env file with:
