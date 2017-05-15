@@ -22,8 +22,10 @@ class Buyer
   end
 
   def open_order_amount
-    open_orders.map { |o| o['size'].to_f * o['price'].to_f }
-               .reduce(&:+)
+    resp = open_orders.map { |o| o['size'].to_f * o['price'].to_f }
+                      .reduce(&:+)
+    resp ||= 0
+    resp
   end
 
   def oldest_order
