@@ -89,7 +89,10 @@ class Buyer
   def buy_loop(usd_pool, max_orders, buy_size, discount)
     while true
       sale_price = last_trade_price * (1 - discount)
-      if (open_order_amount + buy_size) > usd_pool ||
+      if open_orders.empty? &&
+         available_usd < (sale_price * buy_size)
+        puts 'not enough usd to open an order'
+      elsif (open_order_amount + buy_size) > usd_pool ||
          open_orders.length > max_orders ||
          available_usd < (sale_price * buy_size)
         puts 'limit hit, canceling oldest order'
